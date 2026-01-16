@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "33d9ad80-5354-4cf3-aeff-4354adac6d3e",
+		"name": "Employee Management API",
+		"description": "## 📦 Employee Management API — Postman Collection\n\nThis Postman collection provides a comprehensive set of API requests for interacting with the **Employee Management System**, built using **FastAPI** and secured with **JWT-based authentication**.\n\n### 🔐 Authentication\n\n- Implements **token-based authentication (JWT)**\n    \n- Access tokens are automatically generated via the login endpoint\n    \n- Tokens are stored in the Postman environment and reused across requests\n    \n\n### 🧑‍💼 Role-Based Access Control\n\n- **Admin users** have full access to create, update, and delete employees\n    \n- **Regular users** have read-only access to employee data\n    \n- Authorization is enforced server-side and validated on every request\n    \n\n### 📋 Employee Management Features\n\n- Create, retrieve, update, and delete employees\n    \n- Pagination support for large datasets\n    \n- Filtering by department and role\n    \n- Duplicate email validation to ensure data integrity\n    \n\n### 🧪 Testing & Validation\n\n- Designed for easy testing and exploration of API behavior\n    \n- Includes clear request bodies and example responses\n    \n- Supports real-world workflows such as login → token reuse → CRUD operations\n    \n\n### 🛠 Environment Configuration\n\nThe collection uses environment variables for flexibility:\n\n- `{{base_url}}` — API base URL\n    \n- `{{token}}` — JWT access token (auto-updated after login)\n    \n\nThis collection is suitable for:\n\n- Local development\n    \n- API testing and debugging\n    \n- Technical assessments and demos\n    \n- Backend integration with frontend applications",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "51540921",
+		"_collection_link": "https://ved33079-4109936.postman.co/workspace/Ved's-Workspace~baf32c35-a08d-4996-8672-30c5aa452b08/collection/51540921-33d9ad80-5354-4cf3-aeff-4354adac6d3e?action=share&source=collection_link&creator=51540921"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"pm.environment.set(\"token\", response.access_token);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "List of Employees (Pagination)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Query Params\n    // ?page=1\n    // &page_size=10\n    // &department=HR\n    // &role=Manager\n\n// Example Full URL : {{base_url}}/employees?page=1&page_size=10\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees?page=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@company.com\",\n  \"department\": \"Engineering\",\n  \"role\": \"Developer\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",          // Optional: Update employee name\n  \"email\": \"john.doe@company.com\",  // Optional: Must be unique\n  \"department\": \"Engineering\", // Optional: HR / Engineering / Sales\n  \"role\": \"Senior Developer\"   // Optional: Job title\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/employees/27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"27"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/employees/27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"27"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
